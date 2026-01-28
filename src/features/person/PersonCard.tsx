@@ -101,7 +101,7 @@ export function PersonCard({ person }: PersonCardProps) {
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="px-2 py-1 border border-slate-200 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 bg-white"
+                    className="input-brand-inline"
                     autoFocus
                   />
                   <button
@@ -123,11 +123,11 @@ export function PersonCard({ person }: PersonCardProps) {
                 </form>
               ) : (
                 <>
-                  <h3 className="font-semibold text-slate-900 text-base">{person.name}</h3>
+                  <h3 className="font-semibold text-primary text-base">{person.name}</h3>
                   <button
                     type="button"
                     onClick={() => setIsEditingName(true)}
-                    className="text-slate-400 hover:text-slate-600 text-sm"
+                    className="text-secondary hover:text-primary text-sm"
                   >
                     ✏️
                   </button>
@@ -135,16 +135,16 @@ export function PersonCard({ person }: PersonCardProps) {
               )}
             </div>
             {totalPupusas > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-orange-100 rounded-full">
+              <div className="flex items-center gap-1 px-2 py-1 bg-brand-focus-ring/50 rounded-full">
                 <span className="text-xs">👁️</span>
-                <span className="text-sm font-semibold text-orange-700">{totalPupusas}</span>
+                <span className="text-sm font-semibold text-brand-orange">{totalPupusas}</span>
               </div>
             )}
           </div>
 
           {/* Pupusas List */}
           {person.pupusas.length === 0 ? (
-            <div className="text-center py-6 text-slate-500 text-sm">
+            <div className="text-center py-6 text-secondary text-sm">
               Sin pupusas agregadas
             </div>
           ) : (
@@ -152,19 +152,19 @@ export function PersonCard({ person }: PersonCardProps) {
               {person.pupusas.map((pupusa) => (
                 <div
                   key={pupusa.id}
-                  className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-lg border border-slate-200"
+                  className="flex items-center justify-between bg-app px-4 py-3 rounded-lg border border-neutral-border"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{getFillingEmoji(pupusa.filling)}</span>
-                    <span className="text-slate-700 font-medium text-sm">
+                    <span className="text-primary font-medium text-sm">
                       {getFillingDisplayName(pupusa.filling)}
                     </span>
-                    <span className="text-slate-500 text-sm">
+                    <span className="text-secondary text-sm">
                       {getDoughDisplayName(pupusa.dough)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-600 font-medium text-sm">x{pupusa.quantity}</span>
+                    <span className="text-primary font-medium text-sm">x{pupusa.quantity}</span>
                     <button
                       type="button"
                       onClick={() => handleRemovePupusa(pupusa.id)}
@@ -182,7 +182,7 @@ export function PersonCard({ person }: PersonCardProps) {
           <button
             type="button"
             onClick={() => setShowPupusaForm(true)}
-            className="w-full border-2 border-dashed border-orange-400 rounded-xl py-4 px-4 flex items-center justify-center gap-2 text-orange-600 hover:bg-orange-50 transition-colors font-medium"
+            className="w-full border-2 border-dashed border-brand-orange rounded-xl py-4 px-4 flex items-center justify-center gap-2 text-brand-orange hover:bg-brand-focus-ring/30 transition-all duration-200 font-medium shadow-[0_4px_0_0_#D9641F] active:translate-y-0.5 active:shadow-[0_2px_0_0_#D9641F]"
           >
             <span className="text-xl">+</span>
             <span>Agregar Pupusa</span>

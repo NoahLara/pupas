@@ -20,18 +20,18 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
       {/* Modal Content */}
       <div
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-surface border-b border-neutral-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           {title && (
-            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+            <h2 className="text-lg font-semibold text-primary">{title}</h2>
           )}
           <button
             type="button"
             onClick={onClose}
-            className={`ml-auto text-slate-400 hover:text-slate-600 transition-colors p-1 hover:bg-slate-100 rounded-lg ${title ? '' : 'ml-0'}`}
+            className={`ml-auto text-secondary hover:text-primary transition-colors p-1 hover:bg-app rounded-lg ${title ? '' : 'ml-0'}`}
             aria-label="Cerrar"
           >
             <svg

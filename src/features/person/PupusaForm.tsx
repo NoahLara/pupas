@@ -76,7 +76,7 @@ export function PupusaForm({ onAdd, onCancel }: PupusaFormProps) {
     <div className="space-y-6">
       {/* Dough Type Selection */}
       <div>
-        <label className="block text-sm font-bold text-slate-800 mb-3 uppercase">
+        <label className="block text-sm font-bold text-primary mb-3 uppercase">
           TIPO DE MASA
         </label>
         <div className="flex gap-2.5">
@@ -85,8 +85,8 @@ export function PupusaForm({ onAdd, onCancel }: PupusaFormProps) {
             onClick={() => setDough('maiz')}
             className={`flex-1 py-4 px-4 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-center gap-2 ${
               dough === 'maiz'
-                ? 'border-yellow-400 bg-yellow-50 text-yellow-800 shadow-sm'
-                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                ? 'border-brand-orange bg-brand-focus-ring/30 text-primary shadow-sm'
+                : 'border-neutral-border bg-surface text-secondary hover:bg-app'
             }`}
           >
             <span className="text-xl">🌽</span>
@@ -97,8 +97,8 @@ export function PupusaForm({ onAdd, onCancel }: PupusaFormProps) {
             onClick={() => setDough('arroz')}
             className={`flex-1 py-4 px-4 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-center gap-2 ${
               dough === 'arroz'
-                ? 'border-yellow-400 bg-yellow-50 text-yellow-800 shadow-sm'
-                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                ? 'border-brand-orange bg-brand-focus-ring/30 text-primary shadow-sm'
+                : 'border-neutral-border bg-surface text-secondary hover:bg-app'
             }`}
           >
             <span className="text-xl">🍚</span>
@@ -115,17 +115,17 @@ export function PupusaForm({ onAdd, onCancel }: PupusaFormProps) {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Buscar tipo de pupusas (Ej: Frijol con Queso)"
-          className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+          className="input-brand"
         />
       </div>
 
       {/* Filling Selection */}
       <div>
-        <label className="block text-sm font-bold text-slate-800 mb-3 uppercase">
+        <label className="block text-sm font-bold text-primary mb-3 uppercase">
           RELLENO
         </label>
         {filteredFillings.length === 0 ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
+          <div className="text-center py-8 text-secondary text-sm">
             No hay de ese tipo
           </div>
         ) : (
@@ -137,12 +137,12 @@ export function PupusaForm({ onAdd, onCancel }: PupusaFormProps) {
                 onClick={() => setFilling(value)}
                 className={`p-3 rounded-xl border-2 text-sm font-medium transition-all relative ${
                   filling === value
-                    ? 'border-green-500 bg-green-50 text-green-800 shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    ? 'border-action-green bg-action-green/10 text-primary shadow-sm'
+                    : 'border-neutral-border bg-surface text-secondary hover:bg-app'
                 }`}
               >
                 {filling === value && (
-                  <span className="absolute top-1 right-1 text-green-600">✓</span>
+                  <span className="absolute top-1 right-1 text-action-green">✓</span>
                 )}
                 <div className="flex flex-col items-center gap-1">
                   <span className="text-2xl">{fillingEmojis[value]}</span>
@@ -156,7 +156,7 @@ export function PupusaForm({ onAdd, onCancel }: PupusaFormProps) {
 
       {/* Quantity */}
       <div>
-        <label className="block text-sm font-bold text-slate-800 mb-3 uppercase">
+        <label className="block text-sm font-bold text-primary mb-3 uppercase">
           CANTIDAD
         </label>
         <div className="flex justify-center">
@@ -178,7 +178,7 @@ export function PupusaForm({ onAdd, onCancel }: PupusaFormProps) {
           type="button"
           variant="primary"
           onClick={handleSubmit}
-          className="flex-1 bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500"
+          className="flex-1"
           disabled={!isValid}
         >
           Agregar

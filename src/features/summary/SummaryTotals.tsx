@@ -15,17 +15,17 @@ export function SummaryTotals({ doughTotals }: SummaryTotalsProps) {
     return (
       <div className="grid grid-cols-2 gap-4">
         {/* Maíz Card */}
-        <div className="bg-yellow-50 rounded-xl border-2 border-yellow-300 p-6 text-center shadow-sm">
+        <div className="bg-brand-focus-ring/20 rounded-xl border-2 border-brand-orange/40 p-6 text-center shadow-sm">
           <div className="text-4xl mb-2">🌽</div>
-          <div className="text-4xl font-bold text-yellow-800 mb-1">{doughTotals.maiz}</div>
-          <div className="text-lg font-semibold text-yellow-700">Maíz</div>
+          <div className="text-4xl font-bold text-primary mb-1">{doughTotals.maiz}</div>
+          <div className="text-lg font-semibold text-secondary">Maíz</div>
         </div>
         
         {/* Arroz Card */}
-        <div className="bg-yellow-50 rounded-xl border-2 border-yellow-300 p-6 text-center shadow-sm">
+        <div className="bg-brand-focus-ring/20 rounded-xl border-2 border-brand-orange/40 p-6 text-center shadow-sm">
           <div className="text-4xl mb-2">🍚</div>
-          <div className="text-4xl font-bold text-yellow-800 mb-1">{doughTotals.arroz}</div>
-          <div className="text-lg font-semibold text-yellow-700">Arroz</div>
+          <div className="text-4xl font-bold text-primary mb-1">{doughTotals.arroz}</div>
+          <div className="text-lg font-semibold text-secondary">Arroz</div>
         </div>
       </div>
     );
@@ -38,10 +38,10 @@ export function SummaryTotals({ doughTotals }: SummaryTotalsProps) {
   const doughLabel = primaryDough === 'maiz' ? 'Maíz' : 'Arroz';
 
   return (
-    <div className="bg-yellow-50 rounded-xl border-2 border-yellow-300 p-6 text-center shadow-sm">
+    <div className="bg-brand-focus-ring/20 rounded-xl border-2 border-brand-orange/40 p-6 text-center shadow-sm">
       <div className="text-4xl mb-2">{doughEmoji}</div>
-      <div className="text-4xl font-bold text-yellow-800 mb-1">{primaryCount}</div>
-      <div className="text-lg font-semibold text-yellow-700">{doughLabel}</div>
+      <div className="text-4xl font-bold text-primary mb-1">{primaryCount}</div>
+      <div className="text-lg font-semibold text-secondary">{doughLabel}</div>
     </div>
   );
 }

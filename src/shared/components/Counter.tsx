@@ -24,17 +24,17 @@ export function Counter({ value, onChange, min = 1, max = 99 }: CounterProps) {
     <div className="flex items-center gap-3">
       <Button
         type="button"
-        variant="secondary"
+        variant="success"
         onClick={decrement}
         disabled={value <= min}
         className="w-8 h-8 flex items-center justify-center p-0"
       >
         -
       </Button>
-      <span className="w-10 text-center font-semibold text-slate-900 text-lg">{value}</span>
+      <span className="w-10 text-center font-semibold text-primary text-lg">{value}</span>
       <Button
         type="button"
-        variant="secondary"
+        variant="success"
         onClick={increment}
         disabled={value >= max}
         className="w-8 h-8 flex items-center justify-center p-0"

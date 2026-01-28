@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../../state/OrderContext';
 import type { Pupusa, DoughType, Filling } from '../../models/Pupusa';
 import { Page } from '../../shared/layout/Page';
+import { Button } from '../../shared/components/Button';
 import { SummaryTotals } from './SummaryTotals';
 import { SummaryList } from './SummaryList';
 import { Card } from '../../shared/components/Card';
@@ -145,26 +146,26 @@ export function KitchenSummary() {
 
   return (
     <Page>
-      <div className="min-h-screen bg-[#fafbfc]">
+      <div className="min-h-screen bg-app">
         {/* Green Header */}
-        <div className="bg-green-600 px-5 py-4">
+        <div className="bg-action-green px-5 py-4">
           <div className="max-w-xl mx-auto flex items-center gap-3">
             <button
               type="button"
               onClick={handleBack}
-              className="text-white hover:text-green-100 transition-colors flex items-center gap-2"
+              className="text-white hover:bg-action-green-hover/80 transition-colors flex items-center gap-2 rounded-lg py-1 px-2 -ml-2"
             >
               <span>←</span>
               <span className="text-sm">Volver al pedido</span>
             </button>
           </div>
           <div className="max-w-xl mx-auto mt-3 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-action-green-hover flex items-center justify-center">
               <span className="text-2xl">👨‍🍳</span>
             </div>
             <div className="text-white">
               <h1 className="text-xl font-bold">Resumen para Cocina</h1>
-              <p className="text-sm text-green-100">{order.groupName}</p>
+              <p className="text-sm text-white/90">{order.groupName}</p>
             </div>
           </div>
         </div>
@@ -176,21 +177,21 @@ export function KitchenSummary() {
 
           {/* Summary by Person */}
           <Card>
-            <h2 className="text-lg font-bold text-slate-900 mb-4">Resumen por Persona</h2>
+            <h2 className="text-lg font-bold text-primary mb-4">Resumen por Persona</h2>
             <div className="space-y-4">
               {order.people.map((person) => {
                 const personTotal = person.pupusas.reduce((sum, p) => sum + p.quantity, 0);
                 if (personTotal === 0) return null;
                 
                 return (
-                  <div key={person.id} className="border-b border-slate-200 last:border-0 pb-3 last:pb-0">
+                  <div key={person.id} className="border-b border-neutral-border last:border-0 pb-3 last:pb-0">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-slate-900">{person.name}</span>
-                      <span className="text-slate-600 font-medium">{personTotal} pupusa{personTotal !== 1 ? 's' : ''}</span>
+                      <span className="font-semibold text-primary">{person.name}</span>
+                      <span className="text-secondary font-medium">{personTotal} pupusa{personTotal !== 1 ? 's' : ''}</span>
                     </div>
                     <div className="space-y-1 ml-2">
                       {person.pupusas.map((pupusa) => (
-                        <div key={pupusa.id} className="text-sm text-slate-600">
+                        <div key={pupusa.id} className="text-sm text-secondary">
                           • {pupusa.quantity}x {getDoughDisplayName(pupusa.dough)} - {getFillingDisplayName(pupusa.filling)}
                         </div>
                       ))}
@@ -203,14 +204,15 @@ export function KitchenSummary() {
 
           {/* Action Button */}
           <div className="pt-2">
-            <button
+            <Button
               type="button"
+              variant="success"
               onClick={handleSendToWhatsApp}
-              className="w-full px-4 py-3 rounded-xl bg-green-600 text-white font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 flex items-center justify-center gap-2"
             >
               <span>📱</span>
               <span>Enviar a WhatsApp</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>

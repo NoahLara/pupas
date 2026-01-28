@@ -50,7 +50,7 @@ export function SummaryList({ aggregatedPupusas }: SummaryListProps) {
   if (aggregatedPupusas.length === 0) {
     return (
       <Card>
-        <div className="text-center py-10 text-slate-500 text-sm">
+        <div className="text-center py-10 text-secondary text-sm">
           No hay pupusas en el pedido
         </div>
       </Card>
@@ -59,21 +59,21 @@ export function SummaryList({ aggregatedPupusas }: SummaryListProps) {
 
   return (
     <Card>
-      <h2 className="text-lg font-bold text-slate-900 mb-5">Detalle del Pedido</h2>
+      <h2 className="text-lg font-bold text-primary mb-5">Detalle del Pedido</h2>
 
       <div className="space-y-3">
         {aggregatedPupusas.map((item) => (
           <div
             key={`${item.dough}-${item.filling}`}
-            className="flex items-center justify-between py-3 border-b border-slate-200 last:border-0"
+            className="flex items-center justify-between py-3 border-b border-neutral-border last:border-0"
           >
             <div className="flex items-center gap-2">
               <span className="text-xl">{fillingEmojis[item.filling]}</span>
-              <span className="font-medium text-slate-900 text-sm">
+              <span className="font-medium text-primary text-sm">
                 {getDoughDisplayName(item.dough)} – {getFillingDisplayName(item.filling)}
               </span>
             </div>
-            <span className="font-bold text-orange-600 text-base">
+            <span className="font-bold text-brand-orange text-base">
               {item.quantity}
             </span>
           </div>

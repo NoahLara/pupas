@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export function Header({ title, subtitle, onBack, onReset }: HeaderProps) {
   return (
-    <header className="bg-orange-500 px-5 py-4">
+    <header className="bg-brand-orange px-5 py-4">
       <div className="max-w-xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           {onBack && (
