@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../../state/OrderContext';
-import type { Pupusa, DoughType, Filling } from '../../models/Pupusa';
+import type { Pupusa, DoughType, Filling, PupusaSize } from '../../models/Pupusa';
 import { Page } from '../../shared/layout/Page';
+import { PAYPAL_DONATE_URL } from '../../shared/layout/Footer';
 import { Button } from '../../shared/components/Button';
 import { SummaryTotals } from './SummaryTotals';
 import { SummaryList } from './SummaryList';
@@ -11,28 +12,61 @@ import { Card } from '../../shared/components/Card';
 interface AggregatedPupusa {
   dough: DoughType;
   filling: Filling;
+  withCheese: boolean;
+  size: PupusaSize;
   quantity: number;
 }
 
-const getFillingDisplayName = (filling: Filling): string => {
-  const names: Record<Filling, string> = {
-    queso: 'Queso',
-    frijoles_con_queso: 'Frijoles con Queso',
+const getFillingDisplayName = (filling: Filling, withCheese: boolean): string => {
+  const baseNames: Record<Filling, string> = {
+    frijol: 'Frijol',
     revueltas: 'Revueltas',
-    chicharron: 'Chicharrón',
-    chicharron_con_queso: 'Chicharrón con Queso',
-    loroco_con_queso: 'Loroco con Queso',
-    ayote: 'Ayote',
+    queso: 'Queso',
     jalapeno: 'Jalapeño',
+    chicharron: 'Chicharrón',
+    cochinito: 'Cochinito',
+    chorizo: 'Chorizo',
+    loroco: 'Loroco',
+    papelillo: 'Papelillo',
+    mora: 'Mora',
+    mango: 'Mango',
     camaron: 'Camarón',
-    pollo: 'Pollo',
+    pescado: 'Pescado',
+    ajo: 'Ajo',
+    jamon: 'Jamón',
+    pepperoni: 'Pepperoni',
+    hongo: 'Hongo / Champiñón',
     loca: 'Loca',
+    pollo: 'Pollo',
+    carne: 'Carne',
+    ayote: 'Ayote',
+    pina: 'Piña',
+    jocote: 'Jocote',
+    garrobo: 'Garrobo',
+    cusuco: 'Cusuco',
+    conejo: 'Conejo',
   };
-  return names[filling] || filling;
+  
+  const baseName = baseNames[filling] || filling;
+  
+  if (withCheese && filling !== 'queso' && filling !== 'revueltas' && filling !== 'loca') {
+    return `${baseName} con queso`;
+  }
+  
+  return baseName;
 };
 
 const getDoughDisplayName = (dough: DoughType): string => {
   return dough === 'maiz' ? 'Maíz' : 'Arroz';
+};
+
+const getSizeDisplayName = (size: PupusaSize): string => {
+  const sizeNames: Record<PupusaSize, string> = {
+    pequena: 'Pequeña',
+    normal: 'Normal',
+    grande: 'Grande',
+  };
+  return sizeNames[size];
 };
 
 export function KitchenSummary() {
@@ -44,14 +78,14 @@ export function KitchenSummary() {
     return null;
   }
 
-  // Aggregate pupusas by dough + filling
+  // Aggregate pupusas by dough + filling + withCheese + size
   const aggregatedPupusas = useMemo(() => {
     const allPupusas: Pupusa[] = order.people.flatMap(person => person.pupusas);
 
     const aggregated = new Map<string, AggregatedPupusa>();
 
     allPupusas.forEach(pupusa => {
-      const key = `${pupusa.dough}-${pupusa.filling}`;
+      const key = `${pupusa.dough}-${pupusa.filling}-${pupusa.withCheese}-${pupusa.size}`;
       const existing = aggregated.get(key);
 
       if (existing) {
@@ -60,6 +94,8 @@ export function KitchenSummary() {
         aggregated.set(key, {
           dough: pupusa.dough,
           filling: pupusa.filling,
+          withCheese: pupusa.withCheese,
+          size: pupusa.size,
           quantity: pupusa.quantity,
         });
       }
@@ -74,18 +110,45 @@ export function KitchenSummary() {
     });
   }, [order]);
 
-  const totalPupusas = aggregatedPupusas.reduce((sum, item) => sum + item.quantity, 0);
-
-  // Calculate totals by dough type
-  const doughTotals = useMemo(() => {
-    const totals: Record<DoughType, number> = { maiz: 0, arroz: 0 };
-
-    aggregatedPupusas.forEach(item => {
-      totals[item.dough] += item.quantity;
+  // Aggregate beverages by name (flat list, no categories)
+  const aggregatedBeverages = useMemo(() => {
+    const byName = new Map<string, number>();
+    order.people.forEach(person => {
+      person.beverages.forEach(b => {
+        byName.set(b.name, (byName.get(b.name) ?? 0) + b.quantity);
+      });
     });
+    return Array.from(byName.entries())
+      .map(([name, quantity]) => ({ name, quantity }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [order]);
 
-    return totals;
-  }, [aggregatedPupusas]);
+  // Subtotal en USD (pupusas + bebidas)
+  const subtotal = useMemo(() => {
+    return order.people.reduce(
+      (sum, person) =>
+        sum +
+        person.pupusas.reduce((s, p) => s + p.quantity * p.priceUSD, 0) +
+        person.beverages.reduce((s, b) => s + b.quantity * b.priceUSD, 0),
+      0
+    );
+  }, [order]);
+
+  const [tipPercent, setTipPercent] = useState(0);
+  const tipAmount = subtotal * (tipPercent / 100);
+  const totalWithTip = subtotal + tipAmount;
+
+  // Por persona: subtotal y total con propina (propina proporcional a su pedido)
+  const personTotals = useMemo(() => {
+    return order.people.map((person) => {
+      const personSubtotal =
+        person.pupusas.reduce((s, p) => s + p.quantity * p.priceUSD, 0) +
+        person.beverages.reduce((s, b) => s + b.quantity * b.priceUSD, 0);
+      const personTip = subtotal > 0 ? tipAmount * (personSubtotal / subtotal) : 0;
+      const personTotal = personSubtotal + personTip;
+      return { personSubtotal, personTip, personTotal };
+    });
+  }, [order, subtotal, tipAmount]);
 
   const handleBack = () => {
     navigate('/order');
@@ -98,50 +161,110 @@ export function KitchenSummary() {
     
     // Aggregated List (Kitchen-friendly) - Salvadoran format
     message += `*Detalle del Pedido:*\n`;
-    if (aggregatedPupusas.length === 0) {
-      message += `No hay pupusas en el pedido\n`;
+    if (aggregatedPupusas.length === 0 && aggregatedBeverages.length === 0) {
+      message += `No hay ítems en el pedido\n`;
     } else {
       aggregatedPupusas.forEach((item) => {
-        const emoji = item.filling === 'queso' ? '🧀' :
-                     item.filling === 'frijoles_con_queso' ? '🫘' :
-                     item.filling === 'revueltas' ? '🥓' :
-                     item.filling === 'chicharron' || item.filling === 'chicharron_con_queso' ? '🐷' :
-                     item.filling === 'loroco_con_queso' ? '🌸' :
-                     item.filling === 'ayote' ? '🎃' :
-                     item.filling === 'jalapeno' ? '🌶️' :
-                     item.filling === 'camaron' ? '🦐' :
-                     item.filling === 'pollo' ? '🍗' : '🌮';
+        const emojiMap: Record<Filling, string> = {
+          frijol: '🫘',
+          revueltas: '🥓',
+          queso: '🧀',
+          jalapeno: '🌶️',
+          chicharron: '🐷',
+          cochinito: '🍃',
+          chorizo: '🌭',
+          loroco: '🌸',
+          papelillo: '🍃',
+          mora: '🌿',
+          mango: '🥭',
+          camaron: '🦐',
+          pescado: '🐟',
+          ajo: '🧄',
+          jamon: '🍖',
+          pepperoni: '🍕',
+          hongo: '🍄',
+          loca: '🎲',
+          pollo: '🐔',
+          carne: '🥩',
+          ayote: '🎃',
+          pina: '🍍',
+          jocote: '🍑',
+          garrobo: '🦎',
+          cusuco: '🦔',
+          conejo: '🐰',
+        };
+        const emoji = emojiMap[item.filling] || '🫓';
         const doughName = getDoughDisplayName(item.dough);
-        const fillingName = getFillingDisplayName(item.filling);
-        message += `${emoji} ${item.quantity} de ${fillingName} de ${doughName}\n`;
+        const fillingName = getFillingDisplayName(item.filling, item.withCheese);
+        const sizeName = getSizeDisplayName(item.size);
+        message += `${emoji} ${item.quantity} de ${fillingName} de ${doughName} (${sizeName})\n`;
+      });
+      aggregatedBeverages.forEach((item) => {
+        message += `🥤 ${item.quantity} ${item.name}\n`;
       });
     }
     message += `\n`;
-    
-    // Per-Person Breakdown - Salvadoran format
-    message += `*Resumen por Persona:*\n\n`;
-    order.people.forEach((person) => {
-      const personTotal = person.pupusas.reduce((sum, p) => sum + p.quantity, 0);
-      if (personTotal > 0) {
-        message += `*${person.name}:* ${personTotal} pupusa${personTotal !== 1 ? 's' : ''}\n`;
-        person.pupusas.forEach((pupusa) => {
-          const doughName = getDoughDisplayName(pupusa.dough).toLowerCase();
-          const fillingName = getFillingDisplayName(pupusa.filling);
-          message += `  • ${pupusa.quantity} de ${doughName} de ${fillingName}\n`;
-        });
-        message += `\n`;
-      }
-    });
-    
+
+    // Totales y propina
     message += `━━━━━━━━━━━━━━━━\n`;
-    message += `*Total: ${totalPupusas} pupusas*\n`;
-    
-    // Encode message for WhatsApp URL
+    message += `*Subtotal:* $${subtotal.toFixed(2)}\n`;
+    if (tipPercent > 0) {
+      message += `*Propina (${tipPercent}%):* $${tipAmount.toFixed(2)}\n`;
+      message += `*Total:* $${totalWithTip.toFixed(2)}\n`;
+    } else {
+      message += `*Total:* $${subtotal.toFixed(2)}\n`;
+    }
+    message += `\n`;
+
+    // Per-Person Breakdown con precios
+    message += `*Resumen por Persona:*\n\n`;
+    order.people.forEach((person, index) => {
+      const { personSubtotal, personTip, personTotal } = personTotals[index];
+      const personItemCount =
+        person.pupusas.reduce((s, p) => s + p.quantity, 0) +
+        person.beverages.reduce((s, b) => s + b.quantity, 0);
+      if (personItemCount === 0) return;
+
+      message += `*${person.name}:*\n`;
+      person.pupusas.forEach((pupusa) => {
+        const doughName = getDoughDisplayName(pupusa.dough).toLowerCase();
+        const fillingName = getFillingDisplayName(pupusa.filling, pupusa.withCheese);
+        const sizeName = getSizeDisplayName(pupusa.size);
+        const lineTotal = pupusa.quantity * pupusa.priceUSD;
+        message += `  • ${pupusa.quantity} de ${doughName} de ${fillingName} (${sizeName}) — $${lineTotal.toFixed(2)}\n`;
+      });
+      person.beverages.forEach((b) => {
+        const lineTotal = b.quantity * b.priceUSD;
+        message += `  • ${b.quantity} ${b.name} — $${lineTotal.toFixed(2)}\n`;
+      });
+      message += `  Subtotal: $${personSubtotal.toFixed(2)}\n`;
+      if (tipPercent > 0) {
+        message += `  Propina: $${personTip.toFixed(2)}\n`;
+        message += `  *Total: $${personTotal.toFixed(2)}*\n`;
+      } else {
+        message += `  *Total: $${personSubtotal.toFixed(2)}*\n`;
+      }
+      message += `\n`;
+    });
+
+    // Prefer Web Share API on mobile: user stays in the app, no blank screen on return
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator
+        .share({
+          title: order.groupName,
+          text: message,
+        })
+        .catch(() => {
+          // User cancelled or share failed: fallback to WhatsApp URL
+          const encodedMessage = encodeURIComponent(message);
+          window.open(`https://wa.me/?text=${encodedMessage}`, '_blank', 'noopener,noreferrer');
+        });
+      return;
+    }
+
+    // Fallback: open WhatsApp in new tab (desktop or old browsers)
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-    
-    // Open WhatsApp
-    window.open(whatsappUrl, '_blank');
+    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -171,31 +294,61 @@ export function KitchenSummary() {
         </div>
 
         <div className="px-5 py-6 space-y-5">
-          <SummaryTotals doughTotals={doughTotals} totalPupusas={totalPupusas} />
+          <SummaryTotals
+            subtotal={subtotal}
+            tipPercent={tipPercent}
+            onTipPercentChange={setTipPercent}
+            tipAmount={tipAmount}
+            totalWithTip={totalWithTip}
+          />
 
-          <SummaryList aggregatedPupusas={aggregatedPupusas} />
+          <SummaryList
+            aggregatedPupusas={aggregatedPupusas}
+            aggregatedBeverages={aggregatedBeverages}
+          />
 
-          {/* Summary by Person */}
+          {/* Summary by Person con precios */}
           <Card>
             <h2 className="text-lg font-bold text-primary mb-4">Resumen por Persona</h2>
             <div className="space-y-4">
-              {order.people.map((person) => {
-                const personTotal = person.pupusas.reduce((sum, p) => sum + p.quantity, 0);
-                if (personTotal === 0) return null;
-                
+              {order.people.map((person, index) => {
+                const personItemCount =
+                  person.pupusas.reduce((s, p) => s + p.quantity, 0) +
+                  person.beverages.reduce((s, b) => s + b.quantity, 0);
+                if (personItemCount === 0) return null;
+
+                const { personSubtotal, personTip, personTotal } = personTotals[index];
+
                 return (
                   <div key={person.id} className="border-b border-neutral-border last:border-0 pb-3 last:pb-0">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-semibold text-primary">{person.name}</span>
-                      <span className="text-secondary font-medium">{personTotal} pupusa{personTotal !== 1 ? 's' : ''}</span>
+                      <span className="text-secondary font-medium text-sm">
+                        Subtotal: ${personSubtotal.toFixed(2)}
+                        {tipPercent > 0 && (
+                          <> · Con propina: <span className="font-bold text-action-green">${personTotal.toFixed(2)}</span></>
+                        )}
+                      </span>
                     </div>
                     <div className="space-y-1 ml-2">
                       {person.pupusas.map((pupusa) => (
-                        <div key={pupusa.id} className="text-sm text-secondary">
-                          • {pupusa.quantity}x {getDoughDisplayName(pupusa.dough)} - {getFillingDisplayName(pupusa.filling)}
+                        <div key={pupusa.id} className="text-sm text-secondary flex justify-between gap-2">
+                          <span>• {pupusa.quantity}x {getDoughDisplayName(pupusa.dough)} - {getFillingDisplayName(pupusa.filling, pupusa.withCheese)} ({getSizeDisplayName(pupusa.size)})</span>
+                          <span className="shrink-0">${(pupusa.quantity * pupusa.priceUSD).toFixed(2)}</span>
+                        </div>
+                      ))}
+                      {person.beverages.map((beverage) => (
+                        <div key={beverage.id} className="text-sm text-secondary flex justify-between gap-2">
+                          <span>• {beverage.quantity}x {beverage.name}</span>
+                          <span className="shrink-0">${(beverage.quantity * beverage.priceUSD).toFixed(2)}</span>
                         </div>
                       ))}
                     </div>
+                    {tipPercent > 0 && (
+                      <div className="ml-2 mt-1 text-xs text-secondary">
+                        Propina ({tipPercent}%): ${personTip.toFixed(2)}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -213,6 +366,23 @@ export function KitchenSummary() {
               <span>📱</span>
               <span>Enviar a WhatsApp</span>
             </Button>
+          </div>
+
+          {/* Support section - después del resumen, opcional y discreto */}
+          <div className="pt-8 pb-2 text-center">
+            <p className="text-secondary text-sm mb-3">
+              Si Pupas te ayudó a ordenar sin relajo, podés apoyar el proyecto aquí ☕
+            </p>
+            <a
+              href={PAYPAL_DONATE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 min-h-[44px] py-2.5 px-4 rounded-lg border border-neutral-border text-secondary hover:text-brand-orange hover:border-brand-orange/50 hover:bg-brand-focus-ring/10 text-sm font-medium transition-colors"
+              aria-label="Apoyar el proyecto con PayPal"
+            >
+              <span className="text-base" aria-hidden>☕</span>
+              <span>Apoyar con PayPal</span>
+            </a>
           </div>
         </div>
       </div>

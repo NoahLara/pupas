@@ -41,7 +41,18 @@ export function PersonList() {
   }
 
   const totalItems = order.people.reduce(
-    (sum, person) => sum + person.pupusas.reduce((pSum, p) => pSum + p.quantity, 0),
+    (sum, person) =>
+      sum +
+      person.pupusas.reduce((pSum, p) => pSum + p.quantity, 0) +
+      person.beverages.reduce((bSum, b) => bSum + b.quantity, 0),
+    0
+  );
+
+  const totalAmount = order.people.reduce(
+    (sum, person) =>
+      sum +
+      person.pupusas.reduce((pSum, p) => pSum + p.quantity * p.priceUSD, 0) +
+      person.beverages.reduce((bSum, b) => bSum + b.quantity * b.priceUSD, 0),
     0
   );
 
@@ -78,28 +89,26 @@ export function PersonList() {
       <Header
         title={order.groupName}
         subtitle={subtitle}
-        totalAmount="$0.00"
+        totalAmount={`$${totalAmount.toFixed(2)}`}
         onBack={handleBack}
-        onShare={() => {}}
       />
 
       <div className="px-5 py-6">
         <div className="flex flex-col gap-4">
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={handleAddPerson}
+              disabled={order.people.length >= 20}
+              className="inline-flex items-center gap-2 text-brand-orange hover:text-brand-orange-hover text-sm font-medium transition-colors disabled:text-neutral-disabled-text disabled:cursor-not-allowed"
+            >
+              <PersonAddIcon />
+              <span>Agregar persona</span>
+            </button>
+          </div>
           {order.people.map((person) => (
             <PersonCard key={person.id} person={person} />
           ))}
-        </div>
-
-        <div className="flex justify-center pt-6">
-          <button
-            type="button"
-            onClick={handleAddPerson}
-            disabled={order.people.length >= 20}
-            className="inline-flex items-center gap-2 text-brand-orange hover:text-brand-orange-hover text-sm font-medium transition-colors disabled:text-neutral-disabled-text disabled:cursor-not-allowed"
-          >
-            <PersonAddIcon />
-            <span>Agregar persona</span>
-          </button>
         </div>
 
         <div className="pt-6">
@@ -118,11 +127,11 @@ export function PersonList() {
       <Modal
         isOpen={showConfirmReset}
         onClose={() => setShowConfirmReset(false)}
-        title="¿Empezar de nuevo?"
+        title="¿Estás seguro?"
       >
         <div className="space-y-4">
           <p className="text-secondary text-sm">
-            Si vuelves atrás se borrará todo el pedido y tendrás que crear el grupo de nuevo. ¿Estás seguro?
+            Si volvés atrás se borrará toda la información del pedido y tendrás que crear el grupo de nuevo.
           </p>
           <div className="flex gap-3 pt-2">
             <Button

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import logoImg from '../../assets/Logo_Pupas.png';
 
 interface ModalProps {
   isOpen: boolean;
@@ -7,7 +8,7 @@ interface ModalProps {
   children: ReactNode;
 }
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -20,38 +21,22 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
       {/* Modal Content */}
       <div
-        className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="sticky top-0 bg-surface border-b border-neutral-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          {title && (
-            <h2 className="text-lg font-semibold text-primary">{title}</h2>
-          )}
-          <button
-            type="button"
-            onClick={onClose}
-            className={`ml-auto text-secondary hover:text-primary transition-colors p-1 hover:bg-app rounded-lg ${title ? '' : 'ml-0'}`}
-            aria-label="Cerrar"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+        {/* Header: logo (fixed, no scroll) */}
+        <div className="shrink-0 border-b border-neutral-border rounded-t-2xl bg-surface">
+          <div className="flex justify-center pt-3 pb-2">
+            <img
+              src={logoImg}
+              alt="Pupas"
+              className="h-8 w-auto object-contain"
+            />
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6">{children}</div>
+        {/* Content (scrollable) */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-6">{children}</div>
       </div>
     </div>
   );

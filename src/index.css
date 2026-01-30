@@ -65,4 +65,27 @@ body {
     box-shadow: 0 0 0 2px #FAD1B5;
     border-color: #F07A2A;
   }
+
+  /* Price slider: track and thumb */
+  .price-slider {
+    @apply w-full h-3 appearance-none bg-transparent cursor-pointer;
+  }
+  .price-slider:focus {
+    @apply outline-none;
+  }
+  .price-slider::-webkit-slider-runnable-track {
+    @apply h-2.5 rounded-full bg-[#E6DED6];
+  }
+  .price-slider::-webkit-slider-thumb {
+    @apply appearance-none w-7 h-7 rounded-full border-2 border-white bg-action-green cursor-pointer transition-transform active:scale-95;
+    box-shadow: 0 2px 8px rgba(45, 117, 80, 0.4);
+    margin-top: -0.625rem;
+  }
+  .price-slider::-moz-range-track {
+    @apply h-2.5 rounded-full bg-[#E6DED6];
+  }
+  .price-slider::-moz-range-thumb {
+    @apply w-7 h-7 rounded-full border-2 border-white bg-action-green cursor-pointer transition-transform active:scale-95;
+    box-shadow: 0 2px 8px rgba(45, 117, 80, 0.4);
+  }
 }

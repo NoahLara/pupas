@@ -1,3 +1,4 @@
+import type { Beverage } from '../models/Beverage';
 import type { GroupOrder } from '../models/GroupOrder';
 import type { Person } from '../models/Person';
 import type { Pupusa } from '../models/Pupusa';
@@ -9,6 +10,8 @@ export type OrderAction =
   | { type: 'RENAME_PERSON'; payload: { personId: string; newName: string } }
   | { type: 'ADD_PUPUSA'; payload: { personId: string; pupusa: Omit<Pupusa, 'id'> } }
   | { type: 'REMOVE_PUPUSA'; payload: { personId: string; pupusaId: string } }
+  | { type: 'ADD_BEVERAGE'; payload: { personId: string; beverage: Omit<Beverage, 'id'> } }
+  | { type: 'REMOVE_BEVERAGE'; payload: { personId: string; beverageId: string } }
   | { type: 'RESET_ORDER' };
 
 export const initialState: GroupOrder | null = null;
@@ -21,6 +24,7 @@ export function orderReducer(state: GroupOrder | null, action: OrderAction): Gro
         id: `person-${i + 1}`,
         name: `Persona ${i + 1}`,
         pupusas: [],
+        beverages: [],
       }));
 
       return {
@@ -43,6 +47,7 @@ export function orderReducer(state: GroupOrder | null, action: OrderAction): Gro
         id: `person-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         name: `Persona ${n}`,
         pupusas: [],
+        beverages: [],
       };
       return { ...state, people: [...state.people, newPerson] };
     }
@@ -70,27 +75,32 @@ export function orderReducer(state: GroupOrder | null, action: OrderAction): Gro
         people: state.people.map(person => {
           if (person.id !== personId) return person;
 
-          // Check if a pupusa with the same dough and filling already exists
-          const existingIndex = person.pupusas.findIndex(
-            p => p.dough === pupusa.dough && p.filling === pupusa.filling
-          );
+          // Misma combinación = mismo relleno, masa, tamaño y con/sin queso
+          const sameCombo = (p: typeof pupusa) =>
+            p.dough === pupusa.dough &&
+            p.filling === pupusa.filling &&
+            p.size === pupusa.size &&
+            p.withCheese === pupusa.withCheese;
+
+          const existingIndex = person.pupusas.findIndex(sameCombo);
 
           if (existingIndex >= 0) {
-            // Update existing pupusa quantity
+            // Ya existe esa combinación: solo actualizar cantidad y precio (no sumar)
             const updatedPupusas = [...person.pupusas];
             updatedPupusas[existingIndex] = {
               ...updatedPupusas[existingIndex],
-              quantity: updatedPupusas[existingIndex].quantity + pupusa.quantity,
+              quantity: pupusa.quantity,
+              priceUSD: pupusa.priceUSD,
             };
             return { ...person, pupusas: updatedPupusas };
-          } else {
-            // Add new pupusa
-            const newPupusa: Pupusa = {
-              ...pupusa,
-              id: `pupusa-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            };
-            return { ...person, pupusas: [...person.pupusas, newPupusa] };
           }
+
+          // Combinación nueva: agregar como nueva pupusa
+          const newPupusa: Pupusa = {
+            ...pupusa,
+            id: `pupusa-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          };
+          return { ...person, pupusas: [...person.pupusas, newPupusa] };
         }),
       };
     }
@@ -104,6 +114,37 @@ export function orderReducer(state: GroupOrder | null, action: OrderAction): Gro
         people: state.people.map(person =>
           person.id === personId
             ? { ...person, pupusas: person.pupusas.filter(pupusa => pupusa.id !== pupusaId) }
+            : person
+        ),
+      };
+    }
+
+    case 'ADD_BEVERAGE': {
+      if (!state) return state;
+      const { personId, beverage } = action.payload;
+
+      return {
+        ...state,
+        people: state.people.map(person => {
+          if (person.id !== personId) return person;
+          const newBeverage: Beverage = {
+            ...beverage,
+            id: `beverage-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          };
+          return { ...person, beverages: [...person.beverages, newBeverage] };
+        }),
+      };
+    }
+
+    case 'REMOVE_BEVERAGE': {
+      if (!state) return state;
+      const { personId, beverageId } = action.payload;
+
+      return {
+        ...state,
+        people: state.people.map(person =>
+          person.id === personId
+            ? { ...person, beverages: person.beverages.filter(b => b.id !== beverageId) }
             : person
         ),
       };
