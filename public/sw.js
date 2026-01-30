@@ -5,7 +5,7 @@ const BASE = '/pupas/';
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
-      cache.addAll([BASE + 'index.html', BASE + '404.html'])
+      cache.addAll([BASE + 'index.html', BASE + '404.html', BASE + 'icon-pwa.png'])
     ).then(() => self.skipWaiting())
   );
 });
