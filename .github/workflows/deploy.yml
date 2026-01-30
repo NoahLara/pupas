@@ -1,3 +1,5 @@
+# Requiere: en el repo Settings → Pages → Source = "GitHub Actions"
+# (no usar configure-pages: requiere permisos de admin y falla con "Resource not accessible by integration")
 name: Deploy to GitHub Pages
 
 on:
@@ -35,11 +37,6 @@ jobs:
 
       - name: Copy index.html to 404.html for SPA routing
         run: cp dist/index.html dist/404.html
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-        with:
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
