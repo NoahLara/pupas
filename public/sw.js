@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 const CACHE_NAME = 'pupas-v2';
-const BASE = '/pupas/';
+const BASE = '/crew/';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

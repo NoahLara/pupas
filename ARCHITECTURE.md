@@ -181,7 +181,7 @@ GroupOrder | null
 - **React 18** - Framework UI
 - **TypeScript** - Tipado estático
 - **Vite** - Build tool
-- **React Router v6** - Routing (basename: '/pupas/')
+- **React Router v6** - Routing (basename: '/crew/')
 - **TailwindCSS** - Estilos
 - **React Context + useReducer** - Estado global
 - **Poppins Font** - Tipografía

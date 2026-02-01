@@ -2,20 +2,20 @@
   "name": "Pupas | Ordena pupusas fácil y rápido",
   "short_name": "Pupas",
   "description": "Ordena pupusas en grupo sin relajo 🇸🇻",
-  "start_url": "/pupas/",
-  "scope": "/pupas/",
+  "start_url": "/crew/",
+  "scope": "/crew/",
   "display": "standalone",
   "background_color": "#fbf7f2",
   "theme_color": "#2e1e14",
   "icons": [
-    { "src": "/pupas/favicon-48x48.png", "sizes": "48x48", "type": "image/png", "purpose": "any" },
-    { "src": "/pupas/favicon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
-    { "src": "/pupas/favicon-180x180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
-    { "src": "/pupas/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/pupas/icon-192x192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "/pupas/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/pupas/icon-512x512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "/pupas/source-1024x1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
-    { "src": "/pupas/source-1024x1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+    { "src": "/crew/favicon-48x48.png", "sizes": "48x48", "type": "image/png", "purpose": "any" },
+    { "src": "/crew/favicon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "/crew/favicon-180x180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/crew/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/crew/icon-192x192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/crew/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/crew/icon-512x512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/crew/source-1024x1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "/crew/source-1024x1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
   ]
 }

@@ -7,7 +7,7 @@ import { router } from './app/routes'
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/pupas/sw.js', { scope: '/pupas/' }).catch(() => {})
+    navigator.serviceWorker.register('/crew/sw.js', { scope: '/crew/' }).catch(() => {})
   })
 }
 

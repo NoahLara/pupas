@@ -1,5 +1,6 @@
+# Para Cloudflare Pages usa: npm run deploy:cloudflare
+# (wrangler pages deploy deploy --project-name=pupas)
+# Este archivo se usa si despliegas como Worker con assets.
 name = "pupas"
 compatibility_date = "2026-02-01"
-
-[assets]
-directory = "./dist"
+pages_build_output_dir = "./deploy"
