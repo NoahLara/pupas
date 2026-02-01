@@ -9,6 +9,7 @@
     "build": "tsc -b && vite build",
     "build:cloudflare": "npm run build && mkdir -p deploy/crew && cp -r dist/* deploy/crew/ && echo '/crew/* /crew/index.html 200' > deploy/crew/_redirects && echo '/ /crew/ 302' > deploy/_redirects",
     "deploy:cloudflare": "npm run build:cloudflare && npx wrangler pages deploy deploy --project-name=pupas",
+    "deploy": "npx wrangler pages deploy deploy --project-name=pupas",
     "lint": "eslint .",
     "preview": "vite preview"
   },
